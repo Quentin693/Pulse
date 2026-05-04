@@ -7,7 +7,7 @@ const api = useApi();
 const auth = useAuthStore();
 const cart = useCartStore();
 
-const { data: product, error } = await useAsyncData(`shop-${route.params.slug}`, async () => {
+const { data: product, error } = useAsyncData(`shop-${route.params.slug}`, async () => {
   try {
     const r = await api.get<{ product: any }>(`/products/${route.params.slug}`);
     return r.product;

@@ -13,12 +13,81 @@
 
 ## Architecture
 
+### Dépôt
+
 ```
 NFC/
 ├── backend/        API Node.js + Express + MongoDB (Mongoose, JWT)
 ├── frontend/       Application Nuxt 3 (marketing + e-commerce + SaaS)
 └── README.md
 ```
+
+### Vue d'ensemble
+
+Le **frontend Nuxt 3** consomme une **API REST** exposée par **Express** sur le préfixe `/api`. Les données persistantes vivent dans **MongoDB** via **Mongoose**. L’authentification repose sur des **JWT** : le token est stocké côté client (Pinia) et renvoyé dans l’en-tête `Authorization: Bearer …` par le composable `useApi`.
+
+```mermaid
+flowchart LR
+  subgraph client["Navigateur"]
+    Nuxt["Nuxt 3\n(Pages, Pinia, middleware)"]
+  end
+  subgraph server["Backend"]
+    API["Express\n/routes /controllers"]
+    MW["Middlewares\nauth, validate, errors"]
+    API --> MW
+  end
+  DB[(MongoDB)]
+  Nuxt -->|"HTTP JSON + JWT"| API
+  MW --> DB
+```
+
+- **CORS** : origine configurable (`credentials: true`) pour que le front (souvent autre port / domaine) puisse envoyer les cookies si besoin et les en-têtes d’auth.
+- **Santé** : `GET /api/health` pour vérifier que l’API répond.
+
+### Backend — organisation en couches
+
+| Couche | Rôle |
+| ------ | ---- |
+| **Routes** (`src/routes/*.routes.js`) | Monte les chemins HTTP et applique les middlewares (auth, validation). |
+| **Controllers** (`src/controllers/*.js`) | Orchestration : lecture `req`, appels modèles/services, `res.json` / codes HTTP. |
+| **Validators** (`src/validators/*.schema.js`) | Schémas **Joi** pour le corps / params des requêtes mutantes. |
+| **Models** (`src/models/*.js`) | Schémas Mongoose, méthodes d’instance (`toPublicJSON`, etc.). |
+| **Services** (`src/services/`) | Logique transverse (ex. **token.service** pour JWT). |
+| **Middlewares** | `requireAuth` / `optionalAuth` (JWT + chargement utilisateur), `validate`, `errorHandler`, `notFound`, `requestLogger`. |
+
+**Point d’entrée** : `server.js` charge la config (`config/env.js`, `config/db.js`), connecte MongoDB, puis monte `app.js` (enregistrement global des middlewares Express et du montage des routes).
+
+**Surface API** (toutes sous `/api`) :
+
+| Préfixe | Domaine |
+| ------- | ------- |
+| `/api/auth` | Inscription, connexion, tokens |
+| `/api/users` | Profil utilisateur |
+| `/api/bracelets` | Bracelets NFC (propriétaire, tag, mode de redirection) |
+| `/api/activities` | Séances / stats |
+| `/api/products` | Catalogue |
+| `/api/cart` | Panier |
+| `/api/orders` | Commandes |
+| `/api/content` | Blocs marketing (FAQ, témoignages, etc.) |
+| `/api/public` | Profil public par **handle**, simulation **tap NFC** (`/nfc/:tagId`) |
+
+Les erreurs métier passent par **`ApiError`** et sont normalisées par le **gestionnaire d’erreurs** central.
+
+### Frontend — organisation
+
+| Zone | Rôle |
+| ---- | ---- |
+| **Pages** (`pages/`) | Marketing, boutique, checkout, auth, espace `/app/*`, routes publiques `/u/:handle` et `/nfc/:tagId`. |
+| **Stores Pinia** (`stores/`) | `auth` (session + token), `cart` (panier persistant côté client + sync API). |
+| **Composable `useApi`** | Base URL depuis `runtimeConfig.public.apiBase`, injection automatique du **Bearer JWT**. |
+| **Middleware `auth`** | Protection des routes `/app/*` : restauration session puis redirection vers `/login?redirect=…` si non connecté. |
+| **Plugin `auth.client`** | Initialisation / restauration de l’auth au chargement côté client. |
+
+Le même utilisateur et le même JWT servent à la fois au **parcours SaaS** (tableau de bord, bracelets, activités) et au **parcours e-commerce** (panier, commande).
+
+### Modèle de données (vue métier)
+
+Les entités principales sont reliées ainsi : un **User** possède des **NFCBracelets** et des **Activities** ; le catalogue **Product** alimente le **Cart** puis les **Orders** ; le **Content** structure les sections éditoriales du site. Les profils publics s’appuient sur le **handle** unique ; le tap NFC résout un **tagId** vers un bracelet puis éventuellement une URL personnalisée ou la page `/u/:handle`.
 
 ### Stack technique
 

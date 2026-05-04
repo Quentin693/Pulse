@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const api = useApi();
 
-const { data: heroData } = await useAsyncData('home-hero', async () => {
+const { data: heroData } = useAsyncData('home-hero', async () => {
   try {
     const r = await api.get<{ item: any }>('/content/home.hero');
     return r.item;
@@ -10,7 +10,7 @@ const { data: heroData } = await useAsyncData('home-hero', async () => {
   }
 });
 
-const { data: featuresData } = await useAsyncData('home-features', async () => {
+const { data: featuresData } = useAsyncData('home-features', async () => {
   try {
     const r = await api.get<{ item: any }>('/content/home.features');
     return r.item;
@@ -19,7 +19,7 @@ const { data: featuresData } = await useAsyncData('home-features', async () => {
   }
 });
 
-const { data: faqData } = await useAsyncData('home-faq', async () => {
+const { data: faqData } = useAsyncData('home-faq', async () => {
   try {
     const r = await api.get<{ item: any }>('/content/home.faq');
     return r.item;
@@ -28,7 +28,7 @@ const { data: faqData } = await useAsyncData('home-faq', async () => {
   }
 });
 
-const { data: testimonialsData } = await useAsyncData('home-testimonials', async () => {
+const { data: testimonialsData } = useAsyncData('home-testimonials', async () => {
   try {
     const r = await api.get<{ item: any }>('/content/home.testimonials');
     return r.item;
@@ -37,7 +37,7 @@ const { data: testimonialsData } = await useAsyncData('home-testimonials', async
   }
 });
 
-const { data: productsData } = await useAsyncData('home-products', async () => {
+const { data: productsData } = useAsyncData('home-products', async () => {
   try {
     const r = await api.get<{ items: any[] }>('/products?featured=true');
     return r.items;
@@ -101,7 +101,14 @@ useSeoMeta({
         </dl>
       </div>
 
-      <HeroBracelet />
+      <div class="relative flex items-center justify-center">
+        <div class="absolute inset-0 bg-aurora opacity-30 blur-3xl rounded-full scale-75" />
+        <img
+          src="/montre.png"
+          alt="Bracelet PULSE"
+          class="relative w-full max-w-lg drop-shadow-[0_0_60px_rgba(93,250,255,0.35)] animate-float"
+        />
+      </div>
     </div>
   </section>
 

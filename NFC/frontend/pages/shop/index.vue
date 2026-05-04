@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const api = useApi();
 
-const { data: products, pending } = await useAsyncData('shop-list', async () => {
+const { data: products, pending } = useAsyncData('shop-list', async () => {
   try {
     const r = await api.get<{ items: any[] }>('/products');
     return r.items;

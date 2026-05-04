@@ -2,7 +2,7 @@
 const route = useRoute();
 const api = useApi();
 
-const { data, error } = await useAsyncData(`profile-${route.params.handle}`, async () => {
+const { data, error } = useAsyncData(`profile-${route.params.handle}`, async () => {
   try {
     return await api.get<any>(`/public/profile/${route.params.handle}`);
   } catch (err: any) {

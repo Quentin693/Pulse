@@ -7,7 +7,7 @@ useSeoMeta({ title: 'Dashboard — PULSE' });
 const auth = useAuthStore();
 const api = useApi();
 
-const { data: stats, refresh } = await useAsyncData('stats', async () => {
+const { data: stats, refresh } = useAsyncData('stats', async () => {
   try {
     return await api.get<any>('/users/me/stats');
   } catch {

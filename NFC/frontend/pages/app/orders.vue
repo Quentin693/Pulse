@@ -3,7 +3,7 @@ definePageMeta({ middleware: 'auth', layout: 'app' });
 useSeoMeta({ title: 'Commandes — PULSE' });
 
 const api = useApi();
-const { data: orders } = await useAsyncData('my-orders', async () => {
+const { data: orders } = useAsyncData('my-orders', async () => {
   try {
     const r = await api.get<{ items: any[] }>('/orders');
     return r.items;
