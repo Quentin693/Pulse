@@ -72,4 +72,33 @@ describe('Auth flow', () => {
     const res = await request(app).get('/api/auth/me');
     expect(res.status).toBe(401);
   });
+
+  test('login fails with wrong password', async () => {
+    await request(app).post('/api/auth/register').send({
+      email: 'd@d.app',
+      password: 'password1',
+      handle: 'dave',
+      displayName: 'Dave',
+    });
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'd@d.app', password: 'mauvaismdp' });
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBeDefined();
+  });
+
+  test('login fails with non-existent user', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'fantome@pulse.app', password: 'password1' });
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBeDefined();
+  });
+
+  test('protected route with invalid token returns 401', async () => {
+    const res = await request(app)
+      .get('/api/auth/me')
+      .set('Authorization', 'Bearer tokeninvalide');
+    expect(res.status).toBe(401);
+  });
 });

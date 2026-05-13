@@ -15,7 +15,7 @@ const { data: stats, refresh } = useAsyncData('stats', async () => {
   }
 });
 
-const { data: bracelets } = await useAsyncData('dashboard-bracelets', async () => {
+const { data: bracelets } = useAsyncData('dashboard-bracelets', async () => {
   try {
     const r = await api.get<{ items: any[] }>('/bracelets');
     return r.items;

@@ -1,6 +1,10 @@
 # PULSE — Bracelet NFC Fitness & Lifestyle
 
+![CI](https://github.com/VOTRE_ORG/VOTRE_REPO/actions/workflows/ci.yml/badge.svg)
+
 > Application fullstack autour d'un bracelet NFC connecté pour le suivi d'activité, le partage de profil sportif et l'accès à du contenu personnalisé.
+
+> Stratégie QA complète disponible dans [QA.md](./QA.md).
 
 ## Concept
 
@@ -162,8 +166,20 @@ npm run dev                # http://localhost:3000
 ## Tests
 
 ```bash
+# Tests d'intégration backend (Jest + Supertest + MongoDB in-memory)
 cd backend && npm test
+
+# Tests frontend unitaires et d'intégration (Vitest + @nuxt/test-utils)
+cd frontend && npm test
+
+# Tests E2E (Playwright — nécessite backend + frontend démarrés)
+cd frontend && npm run test:e2e
+
+# Tests E2E avec interface graphique Playwright
+cd frontend && npm run test:e2e:ui
 ```
+
+Voir [QA.md](./QA.md) pour la stratégie de tests complète.
 
 ## Auteur
 

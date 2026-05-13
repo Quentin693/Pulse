@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
   css: ['~/assets/css/main.css'],
   app: {
-    pageTransition: { name: 'page', mode: 'out-in' },
+    pageTransition: { name: 'page' },
     head: {
       htmlAttrs: { lang: 'fr' },
       title: 'PULSE — Bracelet NFC fitness & lifestyle',
